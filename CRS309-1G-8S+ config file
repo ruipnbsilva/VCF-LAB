@@ -32,4 +32,30 @@ add bridge=br-trunk interface=bond-mn-a2-3
 add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=10
 add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=20
 add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=30
-add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=40
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=50
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=60
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=70
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=80
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=90
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=100
+
+/ip address
+add address=192.168.1.199/24 interface=ether1
+
+/ip dns
+set allow-remote-requests=yes servers=8.8.8.8,1.1.1.1
+
+/ip firewall filter
+add chain=input action=accept connection-state=established,related
+add chain=input action=accept src-address=192.168.1.0/24
+add chain=input action=drop
+
+/ip route
+add gateway=192.168.1.1
+
+/system clock
+set time-zone-name=Europe/Lisbon
+
+/system identity
+set name=CRS309-VCF-LAB
