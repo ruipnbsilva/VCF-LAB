@@ -1,3 +1,17 @@
+# CRS309 VCF Lab Bootstrap Config
+
+This configuration sets up a MikroTik CRS309-1G-8S+ for a VMware Cloud Foundation lab with:
+
+- LACP bonds for three ESXi hosts (`mn-a2-1`, `mn-a2-2`, `mn-a2-3`)
+- VLAN trunking for Mgmt, vMotion, vSAN, NSX Overlay, Edge uplinks, Storage, and two reserved VLANs
+- Jumbo frames (MTU 9000) end-to-end
+- Minimal firewall (allow mgmt subnet, drop everything else)
+- Clean routing and DNS
+
+## Full Config
+
+```routeros
+
 # CRS309-VCF-LAB Bootstrap Config
 # Date: 2025-10-18
 # Model: CRS309-1G-8S+
