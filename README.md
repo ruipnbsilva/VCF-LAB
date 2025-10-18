@@ -65,7 +65,3 @@ USB/
   ```bash
   vim-cmd hostsvc/firmware/backup_config
   ```
-
----
-
-Feel free to commit this as your `README.md`. I can also help you version your Kickstart files or generate a Confluence-ready deployment guide.
