@@ -1,0 +1,94 @@
+Absolutely, Rui — here’s your **complete step-by-step guide** to prepare a USB install stick for **automated ESXi 8.0.3 deployment** using **rEFInd** and **Kickstart**, tailored for your lab topology and IP schema.
+
+---
+
+## 🧭 USB Install Stick Preparation for ESXi 8.0.3
+
+### 🔧 1. Format the USB Stick
+- Use **FAT32** (UEFI boot requires it)
+- Label it something like `ESXI_INSTALL`
+
+---
+
+### 📁 2. Create Folder Structure
+```
+USB/
+├── efi/
+│   └── boot/
+│       └── bootx64.efi       ← rEFInd bootloader
+├── ks/
+│   ├── host1.cfg             ← Kickstart for MN-A2-1
+│   ├── host2.cfg             ← Kickstart for MN-A2-2
+│   └── host3.cfg             ← Kickstart for MN-A2-3
+└── esxi/
+    ├── boot.cfg              ← ESXi installer config
+    ├── mboot.c32             ← ESXi bootloader
+    └── other installer files
+```
+
+---
+
+### 🧩 3. Install rEFInd Bootloader
+- Download [rEFInd](https://www.rodsbooks.com/refind/)
+- Copy `refind_x64.efi` to `USB/efi/boot/bootx64.efi`
+- Create `refind.conf` in the same folder with entries like:
+
+```ini
+menuentry "ESXi Install - MN-A2-1" {
+    loader /esxi/mboot.c32
+    options boot.cfg ks=usb:/ks/host1.cfg
+}
+
+menuentry "ESXi Install - MN-A2-2" {
+    loader /esxi/mboot.c32
+    options boot.cfg ks=usb:/ks/host2.cfg
+}
+```
+
+---
+
+### 🛠 4. Create Kickstart Files (`ks/hostX.cfg`)
+Each file sets static IP, VLAN, root password, and installs to NVMe:
+
+```bash
+vmaccepteula
+install --firstdisk=mpx.vmhba0:C0:T0:L0 --overwritevmfs
+rootpw yourRootPassword
+
+network --bootproto=static --ip=192.168.10.101 --netmask=255.255.255.0 --gateway=192.168.10.1 --hostname=mn-a2-1.lab --device=vmnic0 --vlanid=10
+
+%firstboot --interpreter=busybox
+esxcli storage filesystem list
+esxcli storage vmfs extent list
+esxcli storage filesystem add -t VMFS -d mpx.vmhba0:C0:T0:L0:2 -l "Tier0-DS"
+
+# Optional: reserve partition for memory tiering
+partedUtil mklabel /dev/disks/mpx.vmhba0:C0:T0:L0 gpt
+partedUtil setptbl /dev/disks/mpx.vmhba0:C0:T0:L0 "gpt" "1 2048 2097151 0 0" "2 2097152 1953500000 0 0"
+
+reboot
+```
+
+> Adjust IPs and hostnames for `host2.cfg`, `host3.cfg`, etc.
+
+---
+
+### 🧪 5. Validate Boot and Install
+- Plug USB into MN-A2 host
+- Boot in **UEFI mode**
+- rEFInd menu appears → select desired host
+- ESXi installs with correct IP, VLAN, and datastore
+
+---
+
+### 🧯 6. Backup and Disaster Recovery
+- Save USB image and Kickstart files to `./lab-backups/`
+- Export ESXi config post-install:
+  ```bash
+  vim-cmd hostsvc/firmware/backup_config
+  ```
+- Register CRS309 and MN-A2 serials with supplier
+
+---
+
+Would you like help generating the Kickstart files or validating NVMe device paths and VLAN reachability? I can also help you simulate post-deploy health checks or build a Confluence-ready deployment doc.
