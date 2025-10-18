@@ -1,0 +1,35 @@
+# CRS309-VCF-LAB Bootstrap Config
+# Date: 2025-10-18
+# Model: CRS309-1G-8S+
+
+/interface bridge
+add name=br-trunk vlan-filtering=yes
+
+/interface ethernet
+set [ find default-name=ether1 ] mtu=9000
+set [ find default-name=sfp-sfpplus1 ] mtu=9000
+set [ find default-name=sfp-sfpplus2 ] mtu=9000
+set [ find default-name=sfp-sfpplus3 ] mtu=9000
+set [ find default-name=sfp-sfpplus4 ] mtu=9000
+set [ find default-name=sfp-sfpplus5 ] mtu=9000
+set [ find default-name=sfp-sfpplus6 ] mtu=9000
+set [ find default-name=sfp-sfpplus7 ] mtu=9000
+set [ find default-name=sfp-sfpplus8 ] mtu=9000
+
+/interface bonding
+add mode=802.3ad lacp-rate=1sec name=bond-mn-a2-1 slaves=sfp-sfpplus1,sfp-sfpplus2
+add mode=802.3ad lacp-rate=1sec name=bond-mn-a2-2 slaves=sfp-sfpplus3,sfp-sfpplus4
+add mode=802.3ad lacp-rate=1sec name=bond-mn-a2-3 slaves=sfp-sfpplus5,sfp-sfpplus6
+
+/interface bridge port
+add bridge=br-trunk interface=sfp-sfpplus7
+add bridge=br-trunk interface=sfp-sfpplus8
+add bridge=br-trunk interface=bond-mn-a2-1
+add bridge=br-trunk interface=bond-mn-a2-2
+add bridge=br-trunk interface=bond-mn-a2-3
+
+/interface bridge vlan
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=10
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=20
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2,bond-mn-a2-3 vlan-ids=30
+add bridge=br-trunk tagged=bond-mn-a2-1,bond-mn-a2-2
